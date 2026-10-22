@@ -1,0 +1,39 @@
+version: '3.8'
+
+services:
+  postgres_db:
+    image: postgres:15-alpine
+    container_name: postgres_${MAHASISWA_NAME}
+    restart: always
+    environment:
+      POSTGRES_USER: ${POSTGRES_USER}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+      POSTGRES_DB: ${POSTGRES_DB}
+    ports:
+      - "22${NIM_SUFFIX}:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+      - ./init.sql:/docker-entrypoint-initdb.d/init.sql
+    networks:
+      - jaringan_salam
+
+  pgadmin_app:
+    image: dpage/pgadmin4:latest
+    container_name: pgadmin_${MAHASISWA_NAME}
+    restart: always
+    environment:
+      PGADMIN_DEFAULT_EMAIL: ${PGADMIN_DEFAULT_EMAIL}
+      PGADMIN_DEFAULT_PASSWORD: ${PGADMIN_DEFAULT_PASSWORD}
+    ports:
+      - "44${NIM_SUFFIX}:80"
+    depends_on:
+      - postgres_db
+    networks:
+      - jaringan_salam
+
+volumes:
+  postgres_data:
+
+networks:
+  jaringan_salam:
+    driver: bridge
